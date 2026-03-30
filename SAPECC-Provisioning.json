@@ -1,0 +1,331 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#%22,
+        "contentVersion": "1.0.0.0",
+        "staticResults": {
+            "[RFC]_Chamar_função_no_SAP0": {
+                "status": "Succeeded",
+                "hasDelegate": false
+            }
+        },
+        "triggers": {
+            "manual": {
+                "type": "Request",
+                "kind": "Http",
+                "inputs": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "AccessPackageAssignmentRequestId": {
+                                "type": "string"
+                            },
+                            "CallbackUriPath": {
+                                "type": "string"
+                            },
+                            "CustomExtensionStageInstanceId": {
+                                "type": "string"
+                            },
+                            "Stage": {
+                                "type": "string"
+                            },
+                            "RequestType": {
+                                "type": "string"
+                            },
+                            "Answers": {
+                                "type": "array"
+                            },
+                            "State": {
+                                "type": "string"
+                            },
+                            "Status": {
+                                "type": "string"
+                            },
+                            "CallbackConfiguration": {
+                                "type": "object",
+                                "properties": {
+                                    "DurationBeforeTimeout": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "AccessPackage": {
+                                "type": "object",
+                                "properties": {
+                                    "Id": {
+                                        "type": "string",
+                                        "description": "AccessPackage-Id"
+                                    },
+                                    "DisplayName": {
+                                        "type": "string",
+                                        "description": "AccessPackage-DisplayName"
+                                    },
+                                    "Description": {
+                                        "type": "string",
+                                        "description": "AccessPackage-Description"
+                                    }
+                                }
+                            },
+                            "AccessPackageCatalog": {
+                                "type": "object",
+                                "properties": {
+                                    "Id": {
+                                        "type": "string",
+                                        "description": "AccessPackageCatalog-Id"
+                                    },
+                                    "DisplayName": {
+                                        "type": "string",
+                                        "description": "AccessPackageCatalog-DisplayName"
+                                    },
+                                    "Description": {
+                                        "type": "string",
+                                        "description": "AccessPackageCatalog-Description"
+                                    }
+                                }
+                            },
+                            "Assignment": {
+                                "type": "object",
+                                "properties": {
+                                    "Id": {
+                                        "type": "string",
+                                        "description": "Assignment-Id"
+                                    },
+                                    "Target": {
+                                        "type": "object",
+                                        "properties": {
+                                            "ConnectedOrganization": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "Id": {
+                                                        "type": "string",
+                                                        "description": "Assignment-Target-ConnectedOrganization-Id"
+                                                    },
+                                                    "DisplayName": {
+                                                        "type": "string",
+                                                        "description": "Assignment-Target-ConnectedOrganization-DisplayName"
+                                                    },
+                                                    "Description": {
+                                                        "type": "string",
+                                                        "description": "Assignment-Target-ConnectedOrganization-Description"
+                                                    }
+                                                }
+                                            },
+                                            "Id": {
+                                                "type": "string",
+                                                "description": "Assignment-Target-Id"
+                                            },
+                                            "ObjectId": {
+                                                "type": "string",
+                                                "description": "Assignment-Target-ObjectId"
+                                            },
+                                            "DisplayName": {
+                                                "type": "string",
+                                                "description": "Assignment-Target-DisplayName"
+                                            }
+                                        }
+                                    },
+                                    "State": {
+                                        "type": "string",
+                                        "description": "Assignment-State"
+                                    },
+                                    "Status": {
+                                        "type": "string",
+                                        "description": "Assignment-Status"
+                                    },
+                                    "AssignmentPolicy": {
+                                        "type": "object",
+                                        "properties": {
+                                            "Id": {
+                                                "type": "string",
+                                                "description": "AssignmentPolicy-Id"
+                                            },
+                                            "DisplayName": {
+                                                "type": "string",
+                                                "description": "AssignmentPolicy-DisplayName"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "Requestor": {
+                                "type": "object",
+                                "properties": {
+                                    "Id": {
+                                        "type": "string",
+                                        "description": "Requestor-Id"
+                                    },
+                                    "ObjectId": {
+                                        "type": "string",
+                                        "description": "Requestor-ObjectId"
+                                    },
+                                    "DisplayName": {
+                                        "type": "string",
+                                        "description": "Requestor-DisplayName"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "operationOptions": "IncludeAuthorizationHeadersInOutputs"
+            }
+        },
+        "actions": {
+            "Initialize_variable-Surname": {
+                "runAfter": {
+                    "Initialize_variable_-_Firstname": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "Surname",
+                            "type": "string",
+                            "value": "@join(skip(split(triggerBody()?['Assignment']?['Target']?['DisplayName'], ' '), 1), ' ')"
+                        }
+                    ]
+                }
+            },
+            "Add_SAP_Basic_Profile": {
+                "runAfter": {
+                    "Change_User_Initial_Password": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "ApiConnection",
+                "inputs": {
+                    "host": {
+                        "connection": {
+                            "name": "@parameters('$connections')['sap']['connectionId']"
+                        }
+                    },
+                    "method": "post",
+                    "body": "<BAPI_USER_ACTGROUPS_ASSIGN xmlns=\"http://Microsoft.LobServices.Sap/2007/03/Rfc/\">\n  <USERNAME>@{variables('Firstname')}</USERNAME>\n  <ACTIVITYGROUPS>\n    <BAPIAGR>\n      <AGR_NAME>Z:ACESSO_BASICO_DEMO_ENTRAID</AGR_NAME>\n    </BAPIAGR>\n  </ACTIVITYGROUPS>\n</BAPI_USER_ACTGROUPS_ASSIGN>",
+                    "path": "/CallRfc",
+                    "queries": {
+                        "rfcName": "BAPI_USER_ACTGROUPS_ASSIGN",
+                        "rfcGroupFilter": ""
+                    }
+                },
+                "runtimeConfiguration": {
+                    "staticResult": {
+                        "staticResultOptions": "Disabled",
+                        "name": "[RFC]_Call_function_in_SAP0"
+                    }
+                }
+            },
+            "Create_SAP_User": {
+                "runAfter": {
+                    "Initialize_variable-Surname": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "ApiConnection",
+                "inputs": {
+                    "host": {
+                        "connection": {
+                            "name": "@parameters('$connections')['sap']['connectionId']"
+                        }
+                    },
+                    "method": "post",
+                    "body": "<BAPI_USER_CREATE1 xmlns=\"http://Microsoft.LobServices.Sap/2007/03/Rfc/\">\n  <USERNAME>@{variables('Firstname')}</USERNAME>\n  <ADDRESS>\n    <LASTNAME>@{variables('Surname')}</LASTNAME>\n  </ADDRESS>\n  <LOGONDATA>\n    <CODVN>X</CODVN>\n    <GLTGV>2025-03-07</GLTGV>\n    <GLTGB>2099-12-31</GLTGB>\n    <USTYP>A</USTYP>\n  </LOGONDATA>\n  <PASSWORD></PASSWORD>\n</BAPI_USER_CREATE1>",
+                    "path": "/CallRfc",
+                    "queries": {
+                        "rfcName": "BAPI_USER_CREATE1",
+                        "rfcGroupFilter": ""
+                    }
+                },
+                "runtimeConfiguration": {
+                    "staticResult": {
+                        "staticResultOptions": "Disabled",
+                        "name": "[RFC]_Call_function_in_SAP0"
+                    }
+                }
+            },
+            "Change_User_Initial_Password": {
+                "runAfter": {
+                    "Create_SAP_User": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "ApiConnection",
+                "inputs": {
+                    "host": {
+                        "connection": {
+                            "name": "@parameters('$connections')['sap']['connectionId']"
+                        }
+                    },
+                    "method": "post",
+                    "body": "<BAPI_USER_CHANGE xmlns=\"http://Microsoft.LobServices.Sap/2007/03/Rfc/\">\n  <USERNAME>@{variables('Firstname')}</USERNAME>\n  <PASSWORD>\n    <BAPIPWD>U2VuaGExMjNA</BAPIPWD> <!-- \"Senha123@\" em Base64 -->\n  </PASSWORD>\n  <PASSWORDX>\n    <BAPIPWD>X</BAPIPWD>\n  </PASSWORDX>\n</BAPI_USER_CHANGE>",
+                    "path": "/CallRfc",
+                    "queries": {
+                        "rfcName": "BAPI_USER_CHANGE",
+                        "autoCommit": false,
+                        "rfcGroupFilter": ""
+                    }
+                }
+            },
+            "Send_an_email_(V2)": {
+                "runAfter": {
+                    "Add_SAP_Basic_Profile": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "ApiConnection",
+                "inputs": {
+                    "host": {
+                        "connection": {
+                            "name": "@parameters('$connections')['office365']['connectionId']"
+                        }
+                    },
+                    "method": "post",
+                    "body": {
+                        "To": "usuario@contoso.com",
+                        "Subject": "Confirmação de Criação de Usuário SAP\n",
+                        "Body": "<p class=\"editor-paragraph\">Prezado(a) @{triggerBody()?['Assignment']?['Target']?['DisplayName']},<br><br>Seu acesso ao sistema SAP foi configurado com sucesso. Seguem os detalhes:<br><br>🔑 <b><strong class=\"editor-text-bold\">Credenciais Iniciais:</strong></b><br><br>Usuário SAP: @{variables('Firstname')}<br>Senha Temporária: Senha123@ (Altere no primeiro login)<br><br>📋 <b><strong class=\"editor-text-bold\">Perfil de Acesso:</strong></b><br><br>Perfil Básico: Z:ACESSO_BASICO_DEMO_ENTRAID<br><br>❗ <b><strong class=\"editor-text-bold\">Instruções Importantes:</strong></b><br><br>Acesse o sistema SAP e altere sua senha imediatamente após o primeiro login (política de segurança).<br><br>Em caso de dúvidas, contate o Suporte Técnico.<br><br>Atenciosamente,<br>Equipe de TI | Trustsis Consulting</p>",
+                        "Importance": "Normal"
+                    },
+                    "path": "/v2/Mail"
+                }
+            },
+            "Initialize_variable_-_Firstname": {
+                "runAfter": {},
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "Firstname",
+                            "type": "string",
+                            "value": "@first(split(triggerBody()?['Assignment']?['Target']?['DisplayName'], ' '))"
+                        }
+                    ]
+                }
+            }
+        },
+        "outputs": {},
+        "parameters": {
+            "$connections": {
+                "type": "Object",
+                "defaultValue": {}
+            }
+        }
+    },
+    "parameters": {
+        "$connections": {
+            "type": "Object",
+            "value": {
+                "sap": {
+                    "id": "/subscriptions/62ed1dca-4f9d-4d93-8772-85fbcb15e969/providers/Microsoft.Web/locations/brazilsouth/managedApis/sap",
+                    "connectionId": "/subscriptions/62ed1dca-4f9d-4d93-8772-85fbcb15e969/resourceGroups/DEMO/providers/Microsoft.Web/connections/sap",
+                    "connectionName": "sap"
+                },
+                "office365": {
+                    "id": "/subscriptions/62ed1dca-4f9d-4d93-8772-85fbcb15e969/providers/Microsoft.Web/locations/brazilsouth/managedApis/office365",
+                    "connectionId": "/subscriptions/62ed1dca-4f9d-4d93-8772-85fbcb15e969/resourceGroups/DEMO/providers/Microsoft.Web/connections/office365",
+                    "connectionName": "office365"
+                }
+            }
+        }
+    }
+}
