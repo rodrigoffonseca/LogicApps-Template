@@ -316,13 +316,13 @@
             "type": "Object",
             "value": {
                 "sap": {
-                    "id": "/subscriptions/62ed1dca-4f9d-4d93-8772-85fbcb15e969/providers/Microsoft.Web/locations/brazilsouth/managedApis/sap",
-                    "connectionId": "/subscriptions/62ed1dca-4f9d-4d93-8772-85fbcb15e969/resourceGroups/DEMO/providers/Microsoft.Web/connections/sap",
+                    "id": "/subscriptions/<ADD YOUR SUBSCRIPTION ID>/providers/Microsoft.Web/locations/brazilsouth/managedApis/sap",
+                    "connectionId": "/subscriptions/<ADD YOUR SUBSCRIPTION ID>/resourceGroups/DEMO/providers/Microsoft.Web/connections/sap",
                     "connectionName": "sap"
                 },
                 "office365": {
-                    "id": "/subscriptions/62ed1dca-4f9d-4d93-8772-85fbcb15e969/providers/Microsoft.Web/locations/brazilsouth/managedApis/office365",
-                    "connectionId": "/subscriptions/62ed1dca-4f9d-4d93-8772-85fbcb15e969/resourceGroups/DEMO/providers/Microsoft.Web/connections/office365",
+                    "id": "/subscriptions/<ADD YOUR SUBSCRIPTION ID>/providers/Microsoft.Web/locations/brazilsouth/managedApis/office365",
+                    "connectionId": "/subscriptions/<ADD YOUR SUBSCRIPTION ID>/resourceGroups/DEMO/providers/Microsoft.Web/connections/office365",
                     "connectionName": "office365"
                 }
             }
